@@ -1,0 +1,121 @@
+:root {
+    --primary-color: #4e73df;
+    --secondary-color: #1cc88a;
+    --danger-color: #e74a3b;
+    --warning-color: #f6c23e;
+    --dark-color: #5a5c69;
+    --light-color: #f8f9fc;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+    padding: 3rem 0;
+    color: white;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 2rem;
+}
+
+.hero-title {
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    backdrop-filter: blur(12px);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.neumorphic {
+    background: #f0f0f0;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px #d9d9d9, 
+                -5px -5px 10px #ffffff;
+    transition: all 0.3s ease;
+}
+
+.neumorphic:focus {
+    box-shadow: inset 3px 3px 6px #d1d1d1, 
+                inset -3px -3px 6px #ffffff;
+    background: #f0f0f0;
+    outline: none;
+}
+
+.study-card {
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    height: 100%;
+    border-left: 4px solid;
+}
+
+.study-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.cluster-Easy { border-left-color: var(--secondary-color); }
+.cluster-Medium { border-left-color: var(--warning-color); }
+.cluster-Hard { border-left-color: var(--danger-color); }
+
+.progress {
+    height: 8px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 4px;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary-color), #224abe);
+    border-radius: 4px;
+}
+
+.badge {
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 0;
+        border-radius: 0 0 15px 15px;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+}
+
+/* Animation for important elements */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.study-card {
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: calc(var(--order) * 0.1s);
+    opacity: 0;
+}
+
+/* Dark mode toggle (future enhancement) */
+.dark-mode-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
