@@ -34,9 +34,16 @@ models, study_data, accuracy = load_resources()
 
 @app.route('/')
 def index():
-    accuracy = read_accuracy_from_file()  # Make sure this returns something like "Accuracy: 85%"
-    return render_template('index.html', topics=TOPICS, MIN_HOURS_PER_DAY=MIN_HOURS_PER_DAY,
-                           MAX_HOURS_PER_DAY=MAX_HOURS_PER_DAY, accuracy=accuracy)
+    if models is None or study_data is None or study_data.empty:
+        flash("System not ready. Please try again later.", "danger")
+        return render_template("index.html", topics=[], accuracy="Unavailable",
+                               MIN_HOURS_PER_DAY=MIN_HOURS_PER_DAY, MAX_HOURS_PER_DAY=MAX_HOURS_PER_DAY)
+
+    return render_template('index.html', topics=study_data['topic'].unique().tolist(),
+                           MIN_HOURS_PER_DAY=MIN_HOURS_PER_DAY,
+                           MAX_HOURS_PER_DAY=MAX_HOURS_PER_DAY,
+                           accuracy=f"AI Accuracy: {accuracy}")
+
 
 
 @app.route("/generate_plan", methods=["POST"])
