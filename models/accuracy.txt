@@ -1,1 +1,1 @@
-R² Score: 1.00, RMSE: 0.00
+R² Score: 1.0000, RMSE: 0.00, KNN R²: 0.7465, KNN RMSE: 1.63

@@ -39,12 +39,21 @@ def index():
         return render_template("index.html", topics=[], accuracy="Unavailable",
                                MIN_HOURS_PER_DAY=MIN_HOURS_PER_DAY, MAX_HOURS_PER_DAY=MAX_HOURS_PER_DAY)
 
+    # Parse accuracy for display on index page
+    try:
+        accuracy_parts = accuracy.split(',')
+        r2_part = [part for part in accuracy_parts if 'R²' in part][0]
+        r2_value = float(r2_part.split(':')[1].strip())
+        accuracy_percent = min(100, max(0, int((r2_value + 1) * 50)))  # Convert R² to percentage
+        display_accuracy = f"AI Accuracy: {accuracy_percent}% (R²: {r2_value:.2f})"
+    except Exception as e:
+        print(f"Error parsing accuracy: {e}")
+        display_accuracy = "AI Accuracy: N/A"
+
     return render_template('index.html', topics=study_data['topic'].unique().tolist(),
                            MIN_HOURS_PER_DAY=MIN_HOURS_PER_DAY,
                            MAX_HOURS_PER_DAY=MAX_HOURS_PER_DAY,
-                           accuracy=f"AI Accuracy: {accuracy}")
-
-
+                           accuracy=display_accuracy)
 
 @app.route("/generate_plan", methods=["POST"])
 def generate_plan():
@@ -56,7 +65,7 @@ def generate_plan():
         # Get and validate inputs
         selected_topics = request.form.getlist('topics')
         study_hours = min(MAX_HOURS_PER_DAY,
-                          max(MIN_HOURS_PER_DAY, float(request.form['study_hours'])))
+                        max(MIN_HOURS_PER_DAY, float(request.form['study_hours'])))
         deadline = datetime.strptime(request.form['deadline'], '%Y-%m-%d')
         today = datetime.now()
         available_days = (deadline - today).days + 1  # Include today
@@ -103,7 +112,7 @@ def generate_plan():
         selected_data['hours_per_day'] = np.minimum(
             study_hours,
             np.maximum(MIN_HOURS_PER_DAY,
-                       np.round(selected_data['time_required'] / selected_data['days_needed'], 1))
+                     np.round(selected_data['time_required'] / selected_data['days_needed'], 1))
         )
 
         selected_data['actual_hours'] = selected_data['hours_per_day'] * selected_data['days_needed']
@@ -140,32 +149,28 @@ def generate_plan():
             })
             current_date += timedelta(days=topic_days)
 
-                        # Convert accuracy to percentage (robust version)
+        # Parse accuracy for display
         try:
-            import re
-            match = re.search(r'R.?Score:\s*(-?\d+(?:\.\d+)?)', accuracy)
-            if match:
-                r2 = float(match.group(1))
-                accuracy_percent = min(100, max(0, int((r2 + 1) * 50)))
-            else:
-                accuracy_percent = "N/A"
+            accuracy_parts = accuracy.split(',')
+            r2_part = [part for part in accuracy_parts if 'R²' in part][0]
+            r2_value = float(r2_part.split(':')[1].strip())
+            accuracy_percent = min(100, max(0, int((r2_value + 1) * 50)))  # Convert R² to percentage
+            display_accuracy = f"AI Accuracy: {accuracy_percent}% (R²: {r2_value:.2f})"
         except Exception as e:
-            print(f"Accuracy parsing error: {e}")
-            accuracy_percent = "N/A"
-
-
+            print(f"Error parsing accuracy: {e}")
+            display_accuracy = "AI Accuracy: N/A"
 
         return render_template("index.html",
-                               topics=study_data['topic'].tolist(),
-                               schedule=schedule,
-                               accuracy=f"AI Accuracy: {accuracy_percent}%",
-                               total_hours=round(total_required_hours, 1),
-                               total_days=int(selected_data['days_needed'].sum()),
-                               available_days=available_days,
-                               completion_percentage=achieved_percent,
-                               study_hours=study_hours,
-                               MIN_HOURS_PER_DAY=MIN_HOURS_PER_DAY,
-                               MAX_HOURS_PER_DAY=MAX_HOURS_PER_DAY)
+                           topics=study_data['topic'].tolist(),
+                           schedule=schedule,
+                           accuracy=display_accuracy,
+                           total_hours=round(total_required_hours, 1),
+                           total_days=int(selected_data['days_needed'].sum()),
+                           available_days=available_days,
+                           completion_percentage=achieved_percent,
+                           study_hours=study_hours,
+                           MIN_HOURS_PER_DAY=MIN_HOURS_PER_DAY,
+                           MAX_HOURS_PER_DAY=MAX_HOURS_PER_DAY)
 
     except Exception as e:
         flash(f"Error generating plan: {str(e)}", "danger")
